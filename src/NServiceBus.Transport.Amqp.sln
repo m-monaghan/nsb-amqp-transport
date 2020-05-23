@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Transport.Amqp", "NServiceBus.Transport.Amqp\NServiceBus.Transport.Amqp.csproj", "{DE08813E-5278-4B6A-A21F-07075E18FE84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmqpQueueSample.Sender", "Samples\AmqpQueueSample.Sender\AmqpQueueSample.Sender.csproj", "{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmqpQueueSample.Sender", "Samples\AmqpQueueSample.Sender\AmqpQueueSample.Sender.csproj", "{208F817C-98B9-4F3D-AB95-46A13E33A45F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmqpQueueSample.Receiver", "Samples\AmqpQueueSample.Receiver\AmqpQueueSample.Receiver.csproj", "{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmqpQueueSample.Receiver", "Samples\AmqpQueueSample.Receiver\AmqpQueueSample.Receiver.csproj", "{000AE3A3-55AF-40E7-9CBE-D32C33D31B3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,13 +17,13 @@ Global
 		{DE08813E-5278-4B6A-A21F-07075E18FE84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE08813E-5278-4B6A-A21F-07075E18FE84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE08813E-5278-4B6A-A21F-07075E18FE84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{208F817C-98B9-4F3D-AB95-46A13E33A45F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{208F817C-98B9-4F3D-AB95-46A13E33A45F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{208F817C-98B9-4F3D-AB95-46A13E33A45F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{208F817C-98B9-4F3D-AB95-46A13E33A45F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{000AE3A3-55AF-40E7-9CBE-D32C33D31B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{000AE3A3-55AF-40E7-9CBE-D32C33D31B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{000AE3A3-55AF-40E7-9CBE-D32C33D31B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{000AE3A3-55AF-40E7-9CBE-D32C33D31B3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
