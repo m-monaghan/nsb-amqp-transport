@@ -1,0 +1,29 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Transport.Amqp", "NServiceBus.Transport.Amqp\NServiceBus.Transport.Amqp.csproj", "{DE08813E-5278-4B6A-A21F-07075E18FE84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmqpQueueSample.Sender", "Samples\AmqpQueueSample.Sender\AmqpQueueSample.Sender.csproj", "{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmqpQueueSample.Receiver", "Samples\AmqpQueueSample.Receiver\AmqpQueueSample.Receiver.csproj", "{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE08813E-5278-4B6A-A21F-07075E18FE84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE08813E-5278-4B6A-A21F-07075E18FE84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE08813E-5278-4B6A-A21F-07075E18FE84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE08813E-5278-4B6A-A21F-07075E18FE84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA26355-3658-4E2A-8F14-0B2BBE2EF93D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F9D9E83-0893-4CA1-AF9C-8355F37641B2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
