@@ -13,6 +13,8 @@
 
             var endpointConfiguration = new EndpointConfiguration ( "NsbSample.Client" );
             var transport = endpointConfiguration.UseTransport<LearningTransport> ();
+            var routing = transport.Routing ();
+            routing.RouteToEndpoint ( typeof ( SayHelloWorld ), "NsbSample.Server" );
 
             var endpointInstance = await Endpoint.Start ( endpointConfiguration )
                 .ConfigureAwait ( false );
@@ -38,7 +40,7 @@
 
                     // Send the command to the local endpoint
                     log.Info ( $"Sending SayHelloWorld command, to {command.WhoIsTheHelloDirectedAt}" );
-                    await endpointInstance.SendLocal ( command )
+                    await endpointInstance.Send ( command )
                         .ConfigureAwait ( false );
 
                     break;

@@ -1,4 +1,4 @@
-﻿namespace NsbSample.Client {
+﻿namespace NsbSample.Server {
     using System.Threading.Tasks;
     using NsbSample.Integration.Messages.Commands;
     using NServiceBus;
