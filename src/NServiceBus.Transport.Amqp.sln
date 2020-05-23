@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AmqpBasic", "AmqpBasic", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NsbBasic", "NsbBasic", "{CA425AEA-E6F3-4B4E-9AF2-1C56E90A6267}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NsbSample.Integration.Contracts", "Samples\NsbSample.Integration.Contracts\NsbSample.Integration.Contracts.csproj", "{483C05B1-3ADA-4442-916A-5F922D921ABB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NsbSample.Integration.Messages", "Samples\NsbSample.Integration.Messages\NsbSample.Integration.Messages.csproj", "{483C05B1-3ADA-4442-916A-5F922D921ABB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NsbSample.Server", "Samples\NsbSample.Server\NsbSample.Server.csproj", "{F9C617F2-D738-4186-9C3B-51FF0FC92C74}"
 EndProject
