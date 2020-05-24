@@ -41,14 +41,17 @@
 
                 switch (key.Key) {
                     case ConsoleKey.S:
-                    var command = new SayHelloWorld {
-                        WhoIsTheHelloDirectedAt = "Jane Doe"
-                    };
 
-                    // Send the command to the local endpoint
-                    log.Info ( $"Sending SayHelloWorld command, to {command.WhoIsTheHelloDirectedAt}" );
-                    await endpointInstance.Send ( command )
-                        .ConfigureAwait ( false );
+                    for(int i =0; i < 1000; i++) {
+                        var command = new SayHelloWorld {
+                            WhoIsTheHelloDirectedAt = $"Jane Doe {i}"
+                        };
+
+                        // Send the command to the local endpoint
+                        log.Info ( $"Sending SayHelloWorld command, to {command.WhoIsTheHelloDirectedAt}" );
+                        await endpointInstance.Send ( command )
+                            .ConfigureAwait ( false );
+                    }
 
                     break;
 

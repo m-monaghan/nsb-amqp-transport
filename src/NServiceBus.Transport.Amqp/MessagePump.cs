@@ -55,6 +55,7 @@ namespace NServiceBus.Transport.Amqp {
             this.receiver.Start ( 10, async ( link, message ) => {
                 try {
                     await ProcessMessageAsync ( message ).ConfigureAwait ( false );
+                    link.Accept ( message );
                 }
                 catch (Exception e) {
                     logger.Error ( $"Processing a message", e );
@@ -77,27 +78,29 @@ namespace NServiceBus.Transport.Amqp {
             headers.Add ( Headers.CorrelationId, message.Properties.CorrelationId );
             headers.Add ( Headers.ReplyToAddress, message.Properties.ReplyTo );
 
-            try {
-                foreach (var prop in message.ApplicationProperties.Map) {
-                    headers.Add ( prop.Key.ToString (), prop.Value.ToString () );
+            if (message.ApplicationProperties != null) {
+                try {
+                    foreach (var prop in message.ApplicationProperties.Map) {
+                        headers.Add ( prop.Key.ToString (), prop.Value.ToString () );
+                    }
                 }
-            }
-            catch (Exception ex) {
-                logger.Error ( $"Failed to retrieve headers from poison message. Moving message to queue '{this.nsbSettings.ErrorQueue}'...", ex );
-                // await MovePoisonMessage ( message, settings.ErrorQueue ).ConfigureAwait ( false );
+                catch (Exception ex) {
+                    logger.Error ( $"Failed to retrieve headers from poison message. Moving message to queue '{this.nsbSettings.ErrorQueue}'...", ex );
+                    // await MovePoisonMessage ( message, settings.ErrorQueue ).ConfigureAwait ( false );
 
-                return;
+                    return;
+                }
             }
 
             string messageId = message.Properties.MessageId;
             var contextBag = new ContextBag ();
-            contextBag.Set ( message );
+            contextBag.Set<Message> ( message );
 
             using (var tokenSource = new CancellationTokenSource ()) {
                 var messageContext = new MessageContext (
                 messageId,
                 headers,
-                Encoding.ASCII.GetBytes ( message.Body.ToString () ) ?? new byte[0],
+                (byte[])message.Body,
                 transportTransaction,
                 tokenSource,
                 contextBag );
