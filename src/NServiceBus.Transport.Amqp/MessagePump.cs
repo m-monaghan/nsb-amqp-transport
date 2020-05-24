@@ -18,7 +18,7 @@ namespace NServiceBus.Transport.Amqp {
         static readonly ILog logger = LogManager.GetLogger<MessagePump> ();
         static readonly TransportTransaction transportTransaction = new TransportTransaction ();
 
-        private Connection connection;
+        private string messagePumpName;
         private Session session;
         private ReceiverLink receiver;
         private Func<MessageContext, Task> passMessageToNsb;
@@ -26,8 +26,8 @@ namespace NServiceBus.Transport.Amqp {
         private CriticalError criticalError;
         private PushSettings nsbSettings;
 
-        public MessagePump ( Connection connection ) {
-            this.connection = connection;
+        public MessagePump ( Session session ) {
+            this.session = session;
         }
 
         public Task Init (
@@ -40,18 +40,16 @@ namespace NServiceBus.Transport.Amqp {
             this.letNsbKnowAboutAnError = onError;
             this.criticalError = criticalError;
             this.nsbSettings = settings;
+            this.messagePumpName = $"MessagePump-{this.nsbSettings.InputQueue}";
 
             return Task.CompletedTask;
         }
 
         public void Start ( PushRuntimeSettings limitations ) {
-            var sessionName = $"MessagePump-{this.nsbSettings.InputQueue}";
+            logger.Info ( $"Starting MessagePump for {this.messagePumpName}" );
 
-            logger.Info ( $"Starting MessagePump for {sessionName}" );
-
-            this.session = new Session ( this.connection );
             this.receiver = new ReceiverLink ( this.session,
-                sessionName,
+                this.messagePumpName,
                 this.nsbSettings.InputQueue );
 
             this.receiver.Start ( 10, async ( link, message ) => {
@@ -59,7 +57,7 @@ namespace NServiceBus.Transport.Amqp {
                     await ProcessMessageAsync ( message ).ConfigureAwait ( false );
                 }
                 catch (Exception e) {
-                    logger.Error ( $"Processing a message", e);
+                    logger.Error ( $"Processing a message", e );
                     link.Reject ( message );
                     return;
                 }
@@ -68,21 +66,20 @@ namespace NServiceBus.Transport.Amqp {
         }
 
         public async Task Stop () {
-            var sessionName = $"MessagePump-{this.nsbSettings.InputQueue}";
-
-            logger.Info ( $"Stopping MessagePump for {sessionName}" );
+            logger.Info ( $"Stopping MessagePump for {this.messagePumpName}" );
 
             await this.receiver.CloseAsync ();
-            await this.session.CloseAsync ();
-            await this.connection.CloseAsync ();
         }
 
         private async Task ProcessMessageAsync ( Message message ) {
             var headers = new Dictionary<string, string> ();
 
+            headers.Add ( Headers.CorrelationId, message.Properties.CorrelationId );
+            headers.Add ( Headers.ReplyToAddress, message.Properties.ReplyTo );
+
             try {
-                foreach(var prop in message.ApplicationProperties.Map) {
-                    headers.Add ( prop.Key.ToString(), prop.Value.ToString() );
+                foreach (var prop in message.ApplicationProperties.Map) {
+                    headers.Add ( prop.Key.ToString (), prop.Value.ToString () );
                 }
             }
             catch (Exception ex) {
@@ -92,11 +89,7 @@ namespace NServiceBus.Transport.Amqp {
                 return;
             }
 
-            string messageId;
-            if (!headers.TryGetValue ( Headers.MessageId, out messageId )) {
-                throw new InvalidOperationException ( "The message did not contain a 'NServiceBus.MessageId' in the header." );
-            }
-
+            string messageId = message.Properties.MessageId;
             var contextBag = new ContextBag ();
             contextBag.Set ( message );
 
@@ -104,7 +97,7 @@ namespace NServiceBus.Transport.Amqp {
                 var messageContext = new MessageContext (
                 messageId,
                 headers,
-                Encoding.ASCII.GetBytes ( message.Body.ToString() ) ?? new byte[0],
+                Encoding.ASCII.GetBytes ( message.Body.ToString () ) ?? new byte[0],
                 transportTransaction,
                 tokenSource,
                 contextBag );

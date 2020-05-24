@@ -6,21 +6,24 @@
     using global::Amqp;
     using NServiceBus;
     using NServiceBus.DelayedDelivery;
+    using NServiceBus.Logging;
     using NServiceBus.Performance.TimeToBeReceived;
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transport;
 
     sealed class AmqpTransportInfrastructure : TransportInfrastructure {
+        static readonly ILog logger = LogManager.GetLogger<AmqpTransportInfrastructure> ();
 
         readonly Address address;
         readonly Connection connection;
+        readonly Session session;
         readonly SettingsHolder settings;
-
 
         public AmqpTransportInfrastructure ( SettingsHolder settings, string connectionString ) {
             this.address = new Address ( connectionString );
             this.connection = new Connection ( address );
+            this.session = new Session ( this.connection );
             this.settings = settings;
         }
 
@@ -41,14 +44,14 @@
 
         public override TransportReceiveInfrastructure ConfigureReceiveInfrastructure () {
             return new TransportReceiveInfrastructure (
-                messagePumpFactory: () => new MessagePump ( this.connection ),
+                messagePumpFactory: () => new MessagePump ( this.session ),
                 queueCreatorFactory: () => new QueueCreator (),
                 preStartupCheck: () => Task.FromResult ( StartupCheckResult.Success ) );
         }
 
         public override TransportSendInfrastructure ConfigureSendInfrastructure () {
             return new TransportSendInfrastructure (
-                () => new Dispatcher (),
+                () => new Dispatcher ( this.session ),
                 preStartupCheck: () => Task.FromResult ( StartupCheckResult.Success ) );
         }
 
@@ -68,6 +71,18 @@
             }
 
             return queue.ToString ();
+        }
+
+        public override Task Start () {
+            logger.Info ("Starting AMQP transport");
+            return base.Start ();
+        }
+
+        public override async Task Stop () {
+            logger.Info ( "Stopping AMQP transport" );
+            await this.session.CloseAsync ();
+            await this.connection.CloseAsync ();
+            await base.Stop ();
         }
     }
 }
