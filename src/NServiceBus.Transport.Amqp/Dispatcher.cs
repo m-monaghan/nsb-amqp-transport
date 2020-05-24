@@ -7,7 +7,7 @@ namespace NServiceBus.Transport.Amqp {
     using System.Threading.Tasks;
     using NServiceBus.Extensibility;
 
-    public class Dispatcher {
+    sealed class Dispatcher : IDispatchMessages {
         public Task Dispatch ( TransportOperations outgoingMessages,
             TransportTransaction transaction,
             ContextBag context ) {

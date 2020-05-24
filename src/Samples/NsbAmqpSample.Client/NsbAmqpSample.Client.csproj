@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NsbSample.Integration.Messages\NsbSample.Integration.Messages.csproj" />
+    <ProjectReference Include="..\..\NServiceBus.Transport.Amqp\NServiceBus.Transport.Amqp.csproj" />
+  </ItemGroup>
+</Project>

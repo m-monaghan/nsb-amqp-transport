@@ -5,7 +5,7 @@
         public override bool RequiresConnectionString => true;
 
         public override TransportInfrastructure Initialize ( SettingsHolder settings, string connectionString ) {
-            return new AmqpTransportInfrastructure ();
+            return new AmqpTransportInfrastructure ( settings, connectionString );
         }
 
         public override string ExampleConnectionStringForErrorMessage { get; } = "amqp://guest:guest@localhost:5672";

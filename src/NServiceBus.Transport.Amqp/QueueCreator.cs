@@ -3,7 +3,7 @@
     using System.Threading.Tasks;
     using NServiceBus.Transport;
 
-    public class QueueCreator : ICreateQueues {
+    sealed class QueueCreator : ICreateQueues {
         public Task CreateQueueIfNecessary ( QueueBindings queueBindings, string identity ) {
             foreach (var address in queueBindings.SendingAddresses) {
                 Console.WriteLine ($"Would create sending address [${address}");

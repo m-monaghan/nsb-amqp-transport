@@ -4,9 +4,113 @@
  */
 namespace NServiceBus.Transport.Amqp {
     using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using global::Amqp;
+    using NServiceBus;
+    using NServiceBus.Extensibility;
+    using NServiceBus.Logging;
+    using NServiceBus.Transport;
 
-    public class MessagePump {
-        public MessagePump () {
+    sealed class MessagePump : IPushMessages {
+        static readonly ILog logger = LogManager.GetLogger<MessagePump> ();
+        static readonly TransportTransaction transportTransaction = new TransportTransaction ();
+
+        private Connection connection;
+        private Session session;
+        private ReceiverLink receiver;
+        private Func<MessageContext, Task> passMessageToNsb;
+        private Func<ErrorContext, Task<ErrorHandleResult>> letNsbKnowAboutAnError;
+        private CriticalError criticalError;
+        private PushSettings nsbSettings;
+
+        public MessagePump ( Connection connection ) {
+            this.connection = connection;
+        }
+
+        public Task Init (
+            Func<MessageContext, Task> onMessage,
+            Func<ErrorContext, Task<ErrorHandleResult>> onError,
+            CriticalError criticalError,
+            PushSettings settings ) {
+
+            this.passMessageToNsb = onMessage;
+            this.letNsbKnowAboutAnError = onError;
+            this.criticalError = criticalError;
+            this.nsbSettings = settings;
+
+            return Task.CompletedTask;
+        }
+
+        public void Start ( PushRuntimeSettings limitations ) {
+            var sessionName = $"MessagePump-{this.nsbSettings.InputQueue}";
+
+            logger.Info ( $"Starting MessagePump for {sessionName}" );
+
+            this.session = new Session ( this.connection );
+            this.receiver = new ReceiverLink ( this.session,
+                sessionName,
+                this.nsbSettings.InputQueue );
+
+            this.receiver.Start ( 10, async ( link, message ) => {
+                try {
+                    await ProcessMessageAsync ( message ).ConfigureAwait ( false );
+                }
+                catch (Exception e) {
+                    logger.Error ( $"Processing a message", e);
+                    link.Reject ( message );
+                    return;
+                }
+            } );
+
+        }
+
+        public async Task Stop () {
+            var sessionName = $"MessagePump-{this.nsbSettings.InputQueue}";
+
+            logger.Info ( $"Stopping MessagePump for {sessionName}" );
+
+            await this.receiver.CloseAsync ();
+            await this.session.CloseAsync ();
+            await this.connection.CloseAsync ();
+        }
+
+        private async Task ProcessMessageAsync ( Message message ) {
+            var headers = new Dictionary<string, string> ();
+
+            try {
+                foreach(var prop in message.ApplicationProperties.Map) {
+                    headers.Add ( prop.Key.ToString(), prop.Value.ToString() );
+                }
+            }
+            catch (Exception ex) {
+                logger.Error ( $"Failed to retrieve headers from poison message. Moving message to queue '{this.nsbSettings.ErrorQueue}'...", ex );
+                // await MovePoisonMessage ( message, settings.ErrorQueue ).ConfigureAwait ( false );
+
+                return;
+            }
+
+            string messageId;
+            if (!headers.TryGetValue ( Headers.MessageId, out messageId )) {
+                throw new InvalidOperationException ( "The message did not contain a 'NServiceBus.MessageId' in the header." );
+            }
+
+            var contextBag = new ContextBag ();
+            contextBag.Set ( message );
+
+            using (var tokenSource = new CancellationTokenSource ()) {
+                var messageContext = new MessageContext (
+                messageId,
+                headers,
+                Encoding.ASCII.GetBytes ( message.Body.ToString() ) ?? new byte[0],
+                transportTransaction,
+                tokenSource,
+                contextBag );
+
+                await this.passMessageToNsb ( messageContext ).ConfigureAwait ( false );
+            }
         }
     }
 }
