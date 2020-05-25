@@ -8,4 +8,8 @@
     <PackageReference Include="NServiceBus" Version="7.3.0" />
     <PackageReference Include="AMQPNetLite" Version="2.4.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Sending\" />
+    <Folder Include="Receiving\" />
+  </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
  * The message pump is responsible for reading messages from the underlying
  * transport and pushing them into the message handling pipeline.
  */
-namespace NServiceBus.Transport.Amqp {
+namespace NServiceBus.Transport.Amqp.Receiving {
     using System;
     using System.Collections.Generic;
     using System.Text;
@@ -76,7 +76,7 @@ namespace NServiceBus.Transport.Amqp {
             var headers = new Dictionary<string, string> ();
 
             headers.Add ( Headers.CorrelationId, message.Properties.CorrelationId );
-            headers.Add ( Headers.ReplyToAddress, message.Properties.ReplyTo );
+            headers.Add ( Headers.ReplyToAddress, message.Properties.ReplyTo );            
 
             if (message.ApplicationProperties != null) {
                 try {

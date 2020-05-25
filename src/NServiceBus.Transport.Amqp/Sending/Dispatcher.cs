@@ -2,7 +2,7 @@
  * The dispatcher is responsible for translating a message (its binary body
  * and headers) and placing it onto the underlying transport technology.
  */
-namespace NServiceBus.Transport.Amqp {
+namespace NServiceBus.Transport.Amqp.Sending {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;

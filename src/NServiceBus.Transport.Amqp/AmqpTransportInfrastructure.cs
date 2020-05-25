@@ -11,6 +11,8 @@
     using NServiceBus.Routing;
     using NServiceBus.Settings;
     using NServiceBus.Transport;
+    using NServiceBus.Transport.Amqp.Receiving;
+    using NServiceBus.Transport.Amqp.Sending;
 
     sealed class AmqpTransportInfrastructure : TransportInfrastructure {
         static readonly ILog logger = LogManager.GetLogger<AmqpTransportInfrastructure> ();
