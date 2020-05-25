@@ -24,7 +24,7 @@ Testing again
 
 ## Samples
 
-The samples have been created and tested against a local docker ActiveMq instance obtained from https://hub.docker.com/r/rmohr/activemq.
+The samples have been created and tested against a local docker ActiveMq instance obtained from https://hub.docker.com/r/vromero/activemq-artemis
 
 ### Notes
 
