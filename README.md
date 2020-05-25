@@ -29,8 +29,10 @@ The samples have been created and tested against a local docker ActiveMq instanc
 ### Notes
 
 To run the docker image:
-docker pull rmohr/activemq
-docker run -p 61616:61616 -p 8161:8161i -p 5672:5672 rmohr/activemq
+```
+docker pull vromero/activemq-artemis
+./scripts/run-docker-artemis.sh
+```
 
 ## References
 
