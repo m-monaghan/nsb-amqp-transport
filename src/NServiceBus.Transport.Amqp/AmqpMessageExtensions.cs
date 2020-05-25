@@ -1,8 +1,9 @@
-﻿namespace NServiceBus.Transport.Amqp.Sending {
+﻿namespace NServiceBus.Transport.Amqp {
     using System;
     using System.Collections.Generic;
     using global::Amqp;
     using global::Amqp.Framing;
+    using NServiceBus.Extensibility;
 
     public static class AmqpMessageExtensions {
         public static void PopulatePropertiesFromNsbMessage (
@@ -44,6 +45,29 @@
             };
         }
 
+        public static Dictionary<string, string> GetProperties (
+            this Message amqpMessage ) {
+
+            var headers = new Dictionary<string, string> ();
+            headers.Add ( Headers.CorrelationId, amqpMessage.Properties.CorrelationId );
+            headers.Add ( Headers.ReplyToAddress, amqpMessage.Properties.ReplyTo );
+
+            if (amqpMessage.ApplicationProperties != null) {
+                foreach (var prop in amqpMessage.ApplicationProperties.Map) {
+                    if (headers.ContainsKey ( prop.Key.ToString () )) continue;
+                    headers.Add ( prop.Key.ToString (), prop.Value.ToString () );
+                }
+            }
+
+            return headers;
+        }
+
+        public static ContextBag GetContextBag(this Message amqpMessage) {
+            var contextBag = new ContextBag ();
+            contextBag.Set<Message> ( amqpMessage );
+            return contextBag;
+        }
+
         private static string GetNsbHeaderValue (
             string nsbHeaderPropertyName,
             Dictionary<string, string> headers,
@@ -55,6 +79,5 @@
 
             return currentHeaderValue;
         }
-
     }
 }

@@ -68,37 +68,15 @@ namespace NServiceBus.Transport.Amqp.Receiving {
 
         public async Task Stop () {
             logger.Info ( $"Stopping MessagePump for {this.messagePumpName}" );
-
             await this.receiver.CloseAsync ();
         }
 
         private async Task ProcessMessageAsync ( Message message ) {
-            var headers = new Dictionary<string, string> ();
-
-            headers.Add ( Headers.CorrelationId, message.Properties.CorrelationId );
-            headers.Add ( Headers.ReplyToAddress, message.Properties.ReplyTo );
-
-            if (message.ApplicationProperties != null) {
-                try {
-                    foreach (var prop in message.ApplicationProperties.Map) {
-                        if (headers.ContainsKey ( prop.Key.ToString () )) continue;
-                        headers.Add ( prop.Key.ToString (), prop.Value.ToString () );
-                    }
-                }
-                catch (Exception ex) {
-                    logger.Error ( $"Failed to retrieve headers from poison message. Moving message to queue '{this.nsbSettings.ErrorQueue}'...", ex );
-                    // await MovePoisonMessage ( message, settings.ErrorQueue ).ConfigureAwait ( false );
-
-                    return;
-                }
-            }
-
+            var headers = message.GetProperties ();
             string messageId = message.Properties.MessageId;
-            var contextBag = new ContextBag ();
-            contextBag.Set<Message> ( message );
-
-            using (var tokenSource = new CancellationTokenSource ()) {
-                var messageContext = new MessageContext (
+            var contextBag = message.GetContextBag ();
+            using var tokenSource = new CancellationTokenSource ();
+            var messageContext = new MessageContext (
                 messageId,
                 headers,
                 (byte[])message.Body,
@@ -106,8 +84,7 @@ namespace NServiceBus.Transport.Amqp.Receiving {
                 tokenSource,
                 contextBag );
 
-                await this.passMessageToNsb ( messageContext ).ConfigureAwait ( false );
-            }
+            await this.passMessageToNsb ( messageContext ).ConfigureAwait ( false );
         }
     }
 }
