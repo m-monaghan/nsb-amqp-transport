@@ -8,8 +8,8 @@ namespace NServiceBus.Transport.Amqp.Sending {
     using NServiceBus.Extensibility;
 
     sealed class Dispatcher : IDispatchMessages {
-        private Session session;
-        private SenderLinkCache senderLinkCache;
+        private readonly Session session;
+        private readonly SenderLinkCache senderLinkCache;
 
         public Dispatcher ( Session session ) {
             this.session = session;
