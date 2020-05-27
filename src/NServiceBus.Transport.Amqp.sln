@@ -73,4 +73,29 @@ Global
 		{C26375CF-9D44-4261-B4BC-BDC83B852C2D} = {CA425AEA-E6F3-4B4E-9AF2-1C56E90A6267}
 		{31B53EC8-DE26-433F-8F1C-2E6DBB2D5E78} = {CA425AEA-E6F3-4B4E-9AF2-1C56E90A6267}
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.TabsToSpaces = True
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.IndentSwitchCaseSection = False
+		$2.NewLinesForBracesInTypes = False
+		$2.NewLinesForBracesInMethods = False
+		$2.NewLinesForBracesInProperties = False
+		$2.NewLinesForBracesInAccessors = False
+		$2.NewLinesForBracesInAnonymousMethods = False
+		$2.NewLinesForBracesInControlBlocks = False
+		$2.NewLinesForBracesInAnonymousTypes = False
+		$2.NewLinesForBracesInObjectCollectionArrayInitializers = False
+		$2.NewLinesForBracesInLambdaExpressionBody = False
+		$2.SpacingAfterMethodDeclarationName = True
+		$2.SpaceWithinMethodDeclarationParenthesis = True
+		$2.SpaceAfterMethodCallName = True
+		$2.SpaceWithinMethodCallParentheses = True
+		$2.SpaceWithinExpressionParentheses = True
+		$2.scope = text/x-csharp
+		$0.DotNetNamingPolicy = $3
+		$3.DirectoryNamespaceAssociation = PrefixedHierarchical
+	EndGlobalSection
 EndGlobal
