@@ -1,19 +1,20 @@
 ﻿namespace AmqpQueueSample.Sender {
     using System;
-    using Amqp;
+    using Apache.NMS;
+    using Apache.NMS.AMQP;
 
     class Program {
         static void Main ( string[] args ) {
-            Address address = new Address ( "amqp://guest:guest@localhost:5672" );
-            Connection connection = new Connection ( address );
-            Session session = new Session ( connection );
+            NmsConnectionFactory factory = new NmsConnectionFactory ( "amqp://localhost:5672" );
+            var connection = factory.CreateConnection ( "guest", "guest" );
+            var session = connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
+            var queue = session.GetQueue ( "Sample.Queue" );
+            var producer = session.CreateProducer ( queue );
 
-            Message message = new Message ( "Hello AMQP!" );
-            SenderLink sender = new SenderLink ( session, "sender-link", "Sample.Queue" );
-            sender.Send ( message );
+            var message = producer.CreateTextMessage ( "Hello AMQP!" );
+            producer.Send ( message );
             Console.WriteLine ( "Sent Hello AMQP!" );
 
-            sender.Close ();
             session.Close ();
             connection.Close ();
         }
