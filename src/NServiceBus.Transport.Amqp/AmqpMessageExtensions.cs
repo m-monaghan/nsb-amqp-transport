@@ -22,6 +22,14 @@
                 Headers.CorrelationId,
                 outgoingMessage.Headers,
                 properties.CorrelationId );
+            properties.CreationTime = GetNsbHeaderDateTimeValue (
+                Headers.TimeSent,
+                outgoingMessage.Headers,
+                properties.CreationTime );
+            properties.AbsoluteExpiryTime = GetNsbHeaderDateTimeValue (
+                Headers.TimeToBeReceived,
+                outgoingMessage.Headers,
+                properties.AbsoluteExpiryTime );
 
             amqpMessage.Properties = properties;
         }
@@ -62,7 +70,7 @@
             return headers;
         }
 
-        public static ContextBag GetContextBag(this Message amqpMessage) {
+        public static ContextBag GetNewContextBag ( this Message amqpMessage ) {
             var contextBag = new ContextBag ();
             contextBag.Set<Message> ( amqpMessage );
             return contextBag;
@@ -78,6 +86,22 @@
                 return headerValue;
 
             return currentHeaderValue;
+        }
+
+        private static DateTime GetNsbHeaderDateTimeValue (
+                    string nsbHeaderPropertyName,
+                    Dictionary<string, string> headers,
+                    DateTime currentHeaderValue ) {
+            if (!headers.TryGetValue ( nsbHeaderPropertyName, out string headerValue )) {
+                return currentHeaderValue;
+            }
+
+            try {
+                return DateTimeExtensions.ToUtcDateTime ( headerValue );
+            }
+            catch (InvalidCastException) {
+                return currentHeaderValue;
+            }
         }
     }
 }

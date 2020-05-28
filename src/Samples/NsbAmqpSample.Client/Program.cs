@@ -42,7 +42,7 @@
                 switch (key.Key) {
                     case ConsoleKey.S:
 
-                    for(int i =0; i < 1000; i++) {
+                    for(int i =0; i < 1; i++) {
                         var command = new SayHelloWorld {
                             WhoIsTheHelloDirectedAt = $"Jane Doe {i}"
                         };

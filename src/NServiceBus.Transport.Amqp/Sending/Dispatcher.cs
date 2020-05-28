@@ -6,8 +6,10 @@ namespace NServiceBus.Transport.Amqp.Sending {
     using System.Threading.Tasks;
     using global::Amqp;
     using NServiceBus.Extensibility;
+    using NServiceBus.Logging;
 
     sealed class Dispatcher : IDispatchMessages {
+        static readonly ILog logger = LogManager.GetLogger<Dispatcher> ();
         private readonly Session session;
         private readonly SenderLinkCache senderLinkCache;
 
@@ -37,7 +39,21 @@ namespace NServiceBus.Transport.Amqp.Sending {
                     nsbMessage.Headers );
                 amqpMessage.SetBodyFromNsbMessage ( nsbMessage );
 
-                sender.Send ( amqpMessage );
+                try {
+                    sender.Send ( amqpMessage );
+                } catch(AmqpException amqpException) {
+
+                    logger.Error ( "Could not send message", amqpException );
+                    foreach(var keyName in amqpException.Data.Keys) {
+                        logger.Info ( $"Error Data [{keyName}]=[{amqpException.Data[keyName]}]" );
+                    }
+
+                    if (sender.IsClosed) {
+                        logger.Warn ( "SenderLink closed, refreshing" );
+                    }
+
+                    throw;
+                }
             }
 
             return Task.CompletedTask;
