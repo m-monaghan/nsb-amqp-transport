@@ -10,6 +10,7 @@
             var session = connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
             var queue = session.GetQueue ( "Sample.Queue" );
             var producer = session.CreateProducer ( queue );
+            producer.DeliveryMode = MsgDeliveryMode.NonPersistent;
 
             var message = producer.CreateTextMessage ( "Hello AMQP!" );
             producer.Send ( message );

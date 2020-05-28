@@ -1,70 +1,62 @@
 ﻿namespace NServiceBus.Transport.Amqp {
-    using System;
     using System.Collections.Generic;
-    using global::Amqp;
-    using global::Amqp.Framing;
+    using Apache.NMS;
     using NServiceBus.Extensibility;
+    using IMessage = Apache.NMS.IMessage;
 
     public static class AmqpMessageExtensions {
         public static void PopulatePropertiesFromNsbMessage (
-            this Message amqpMessage,
+            this IMessage amqpMessage,
             OutgoingMessage outgoingMessage ) {
 
-            var properties = new Properties {
-                MessageId = outgoingMessage.MessageId
-            };
-
-            properties.ReplyTo = GetNsbHeaderValue (
-                Headers.ReplyToAddress,
-                outgoingMessage.Headers,
-                properties.ReplyTo );
-            properties.CorrelationId = GetNsbHeaderValue (
+            amqpMessage.NMSMessageId = outgoingMessage.MessageId;
+            amqpMessage.NMSCorrelationID = GetNsbHeaderValue (
                 Headers.CorrelationId,
                 outgoingMessage.Headers,
-                properties.CorrelationId );
-
-            amqpMessage.Properties = properties;
+                amqpMessage.NMSCorrelationID );
         }
 
         public static void PopulateApplicationPropertiesFromNsbHeaders (
-            this Message amqpMessage,
+            this IMessage amqpMessage,
             Dictionary<string, string> headers ) {
 
-            amqpMessage.ApplicationProperties = new ApplicationProperties ();
             foreach (var headerPropertyName in headers.Keys) {
-                amqpMessage.ApplicationProperties[headerPropertyName] = headers[headerPropertyName];
+                if (!amqpMessage.Properties.Contains ( headerPropertyName ))
+                    amqpMessage.Properties.SetString ( headerPropertyName,
+                        headers[headerPropertyName] );
             }
         }
 
-        public static void SetBodyFromNsbMessage (
-            this Message amqpMessage,
-            OutgoingMessage outgoingMessage ) {
-
-            amqpMessage.BodySection = new Data () {
-                Binary = outgoingMessage.Body
-            };
-        }
-
         public static Dictionary<string, string> GetProperties (
-            this Message amqpMessage ) {
+            this IMessage amqpMessage ) {
 
             var headers = new Dictionary<string, string> ();
-            headers.Add ( Headers.CorrelationId, amqpMessage.Properties.CorrelationId );
-            headers.Add ( Headers.ReplyToAddress, amqpMessage.Properties.ReplyTo );
+            headers.Add ( Headers.CorrelationId, amqpMessage.NMSCorrelationID );
 
-            if (amqpMessage.ApplicationProperties != null) {
-                foreach (var prop in amqpMessage.ApplicationProperties.Map) {
-                    if (headers.ContainsKey ( prop.Key.ToString () )) continue;
-                    headers.Add ( prop.Key.ToString (), prop.Value.ToString () );
-                }
+            if (amqpMessage.NMSReplyTo != null) {
+                if (amqpMessage.NMSReplyTo.IsQueue)
+                    headers.Add ( Headers.ReplyToAddress,
+                        ((IQueue) amqpMessage.NMSReplyTo).QueueName );
+                else if (amqpMessage.NMSReplyTo.IsTopic)
+                    headers.Add ( Headers.ReplyToAddress,
+                        ( (ITopic)amqpMessage.NMSReplyTo ).TopicName );
+            }
+
+            foreach (var keyName in amqpMessage.Properties.Keys) {
+                if (headers.ContainsKey ( keyName.ToString() )) continue;
+                headers.Add ( keyName.ToString(), amqpMessage.Properties[keyName.ToString()].ToString() );
             }
 
             return headers;
         }
 
-        public static ContextBag GetContextBag(this Message amqpMessage) {
+        public static string GetMessageId(this IMessage amqpMessage) {
+            return amqpMessage.NMSMessageId;
+        }
+
+        public static ContextBag GetContextBag(this IMessage amqpMessage) {
             var contextBag = new ContextBag ();
-            contextBag.Set<Message> ( amqpMessage );
+            contextBag.Set ( amqpMessage );
             return contextBag;
         }
 

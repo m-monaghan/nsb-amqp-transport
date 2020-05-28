@@ -8,25 +8,28 @@ namespace NServiceBus.Transport.Amqp.Receiving {
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using global::Amqp;
+    using Apache.NMS;
     using NServiceBus;
     using NServiceBus.Extensibility;
     using NServiceBus.Logging;
     using NServiceBus.Transport;
+    using IMessage = Apache.NMS.IMessage;
 
     sealed class MessagePump : IPushMessages {
         static readonly ILog logger = LogManager.GetLogger<MessagePump> ();
         static readonly TransportTransaction transportTransaction = new TransportTransaction ();
 
         private string messagePumpName;
-        private Session session;
-        private ReceiverLink receiver;
+        private ISession session;
+        private IQueue queue;
+        private IMessageConsumer consumer;
+
         private Func<MessageContext, Task> passMessageToNsb;
         private Func<ErrorContext, Task<ErrorHandleResult>> letNsbKnowAboutAnError;
         private CriticalError criticalError;
         private PushSettings nsbSettings;
 
-        public MessagePump ( Session session ) {
+        public MessagePump ( ISession session ) {
             this.session = session;
         }
 
@@ -42,44 +45,35 @@ namespace NServiceBus.Transport.Amqp.Receiving {
             this.nsbSettings = settings;
             this.messagePumpName = $"MessagePump-{this.nsbSettings.InputQueue}";
 
+            this.queue = session.GetQueue ( this.nsbSettings.InputQueue );
+            this.consumer = session.CreateConsumer ( queue );
+            this.consumer.Listener += HandleConsumerMessage;
+
             return Task.CompletedTask;
         }
 
         public void Start ( PushRuntimeSettings limitations ) {
             logger.Info ( $"Starting MessagePump for {this.messagePumpName}" );
-
-            this.receiver = new ReceiverLink ( this.session,
-                this.messagePumpName,
-                this.nsbSettings.InputQueue );
-
-            this.receiver.Start ( 10, async ( link, message ) => {
-                try {
-                    await ProcessMessageAsync ( message ).ConfigureAwait ( false );
-                    link.Accept ( message );
-                }
-                catch (Exception e) {
-                    logger.Error ( $"Processing a message", e );
-                    link.Reject ( message );
-                    return;
-                }
-            } );
-
         }
 
-        public async Task Stop () {
+        public Task Stop () {
             logger.Info ( $"Stopping MessagePump for {this.messagePumpName}" );
-            await this.receiver.CloseAsync ();
+            return Task.CompletedTask;
         }
 
-        private async Task ProcessMessageAsync ( Message message ) {
+        private async void HandleConsumerMessage ( IMessage message ) {
+            await this.ProcessMessageAsync ( message ).ConfigureAwait ( false );
+        }
+
+        private async Task ProcessMessageAsync ( IMessage message ) {
             var headers = message.GetProperties ();
-            string messageId = message.Properties.MessageId;
+            string messageId = message.GetMessageId ();
             var contextBag = message.GetContextBag ();
             using var tokenSource = new CancellationTokenSource ();
             var messageContext = new MessageContext (
                 messageId,
                 headers,
-                (byte[])message.Body,
+                ( (IBytesMessage)message ).Content,
                 transportTransaction,
                 tokenSource,
                 contextBag );
