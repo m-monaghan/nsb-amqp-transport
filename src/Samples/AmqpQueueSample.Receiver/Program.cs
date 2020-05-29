@@ -1,22 +1,29 @@
 ﻿namespace AmqpQueueSample.Receiver {
     using System;
-    using Amqp;
-  
+    using Apache.NMS;
+    using Apache.NMS.AMQP;
+    using Apache.NMS.AMQP.Message;
+
     class Program {
         static void Main ( string[] args ) {
-            Address address = new Address ( "amqp://guest:guest@localhost:5672" );
-            Connection connection = new Connection ( address );
-            Session session = new Session ( connection );
-            ReceiverLink receiver = new ReceiverLink ( session, "receiver-link", "Sample.Queue" );
+            var factory = new NmsConnectionFactory ( "failover:(amqp://localhost:5672,amqp://localhost:5672)?nms.clientId=AmqpQueueSample.Server.&failover.maxReconnectAttempts=20" );
+            var connection = factory.CreateConnection ( "guest", "guest" );
+            var session = connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
+            var queue = session.GetQueue ( "Sample.Queue" );
+            var consumer = session.CreateConsumer ( queue );
+            consumer.Listener += HandleConsumerMessage;
+
+            connection.Start ();
 
             Console.WriteLine ( "Receiver connected to broker." );
-            Message message = receiver.Receive ();
-            Console.WriteLine ( "Received " + message.Body );
-            receiver.Accept ( message );
-
-            receiver.Close ();
+            Console.ReadLine ();
+            Console.WriteLine ( "Shutting doon!" );
             session.Close ();
             connection.Close ();
+        }
+
+        private static void HandleConsumerMessage ( IMessage message ) {
+            Console.WriteLine ( "Received " + ( (ITextMessage)message ).Text );
         }
     }
 }

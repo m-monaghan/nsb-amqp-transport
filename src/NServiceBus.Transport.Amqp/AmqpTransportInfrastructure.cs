@@ -3,7 +3,8 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using global::Amqp;
+    using Apache.NMS;
+    using Apache.NMS.AMQP;
     using NServiceBus;
     using NServiceBus.DelayedDelivery;
     using NServiceBus.Logging;
@@ -17,15 +18,15 @@
     sealed class AmqpTransportInfrastructure : TransportInfrastructure {
         static readonly ILog logger = LogManager.GetLogger<AmqpTransportInfrastructure> ();
 
-        readonly Address address;
-        readonly Connection connection;
-        readonly Session session;
+        readonly NmsConnectionFactory factory;
+        readonly IConnection connection;
+        readonly ISession session;
         readonly SettingsHolder settings;
 
         public AmqpTransportInfrastructure ( SettingsHolder settings, string connectionString ) {
-            this.address = new Address ( connectionString );
-            this.connection = new Connection ( address );
-            this.session = new Session ( this.connection );
+            this.factory = new NmsConnectionFactory ( connectionString );
+            this.connection = this.factory.CreateConnection ( "guest", "guest" );
+            this.session = connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
             this.settings = settings;
         }
 
@@ -77,13 +78,14 @@
 
         public override Task Start () {
             logger.Info ("Starting AMQP transport");
+            this.connection.Start ();
             return base.Start ();
         }
 
         public override async Task Stop () {
             logger.Info ( "Stopping AMQP transport" );
-            await this.session.CloseAsync ();
-            await this.connection.CloseAsync ();
+            this.session.Close ();
+            this.connection.Close ();
             await base.Stop ();
         }
     }

@@ -4,16 +4,14 @@
  */
 namespace NServiceBus.Transport.Amqp.Sending {
     using System.Threading.Tasks;
-    using global::Amqp;
+    using Apache.NMS;
     using NServiceBus.Extensibility;
 
     sealed class Dispatcher : IDispatchMessages {
-        private readonly Session session;
-        private readonly SenderLinkCache senderLinkCache;
+        private ISession session;
 
-        public Dispatcher ( Session session ) {
+        public Dispatcher ( ISession session ) {
             this.session = session;
-            this.senderLinkCache = new SenderLinkCache ();
         }
 
         public Task Dispatch (
@@ -22,22 +20,18 @@ namespace NServiceBus.Transport.Amqp.Sending {
             ContextBag context ) {
 
             foreach (var operation in outgoingMessages.UnicastTransportOperations) {
-                var sender = this.senderLinkCache.GetSenderLink ( operation.Destination );
-                if (sender == null)
-                    sender = this.senderLinkCache.CacheSenderLink (
-                        this.session,
-                        operation.Destination,
-                        operation.Destination );
+                var queue = this.session.GetQueue ( operation.Destination );
+                var producer = this.session.CreateProducer ( queue );
+                producer.DeliveryMode = MsgDeliveryMode.NonPersistent;
 
-                var amqpMessage = new Message ();
                 var nsbMessage = operation.Message;
+                var amqpMessage = producer.CreateBytesMessage ( nsbMessage.Body );
 
                 amqpMessage.PopulatePropertiesFromNsbMessage ( nsbMessage );
                 amqpMessage.PopulateApplicationPropertiesFromNsbHeaders (
                     nsbMessage.Headers );
-                amqpMessage.SetBodyFromNsbMessage ( nsbMessage );
 
-                sender.Send ( amqpMessage );
+                producer.Send ( amqpMessage );
             }
 
             return Task.CompletedTask;
