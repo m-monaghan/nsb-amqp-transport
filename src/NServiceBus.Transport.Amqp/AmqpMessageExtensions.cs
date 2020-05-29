@@ -7,13 +7,20 @@
     public static class AmqpMessageExtensions {
         public static void PopulatePropertiesFromNsbMessage (
             this IMessage amqpMessage,
-            OutgoingMessage outgoingMessage ) {
+            OutgoingMessage outgoingMessage,
+            ISession session ) {
 
             amqpMessage.NMSMessageId = outgoingMessage.MessageId;
             amqpMessage.NMSCorrelationID = GetNsbHeaderValue (
                 Headers.CorrelationId,
                 outgoingMessage.Headers,
                 amqpMessage.NMSCorrelationID );
+            var replyToQueueName = GetNsbHeaderValue (
+                Headers.ReplyToAddress,
+                outgoingMessage.Headers,
+                string.Empty );
+            if (!string.IsNullOrEmpty ( replyToQueueName ))
+                amqpMessage.NMSReplyTo = session.GetQueue ( replyToQueueName );
         }
 
         public static void PopulateApplicationPropertiesFromNsbHeaders (

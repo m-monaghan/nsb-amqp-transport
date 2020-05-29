@@ -27,7 +27,7 @@ namespace NServiceBus.Transport.Amqp.Sending {
                 var nsbMessage = operation.Message;
                 var amqpMessage = producer.CreateBytesMessage ( nsbMessage.Body );
 
-                amqpMessage.PopulatePropertiesFromNsbMessage ( nsbMessage );
+                amqpMessage.PopulatePropertiesFromNsbMessage ( nsbMessage, this.session );
                 amqpMessage.PopulateApplicationPropertiesFromNsbHeaders (
                     nsbMessage.Headers );
 
