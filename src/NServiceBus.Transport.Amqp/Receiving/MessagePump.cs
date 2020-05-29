@@ -15,7 +15,7 @@ namespace NServiceBus.Transport.Amqp.Receiving {
     using NServiceBus.Transport;
     using IMessage = Apache.NMS.IMessage;
 
-    sealed class MessagePump : IPushMessages {
+    sealed class MessagePump : IPushMessages, IDisposable {
         static readonly ILog logger = LogManager.GetLogger<MessagePump> ();
         static readonly TransportTransaction transportTransaction = new TransportTransaction ();
 
@@ -33,6 +33,10 @@ namespace NServiceBus.Transport.Amqp.Receiving {
             this.session = session;
         }
 
+        public void Dispose () {
+            this.queue?.Dispose ();
+        }
+
         public Task Init (
             Func<MessageContext, Task> onMessage,
             Func<ErrorContext, Task<ErrorHandleResult>> onError,
@@ -45,19 +49,24 @@ namespace NServiceBus.Transport.Amqp.Receiving {
             this.nsbSettings = settings;
             this.messagePumpName = $"MessagePump-{this.nsbSettings.InputQueue}";
 
-            this.queue = session.GetQueue ( this.nsbSettings.InputQueue );
-            this.consumer = session.CreateConsumer ( queue );
-            this.consumer.Listener += HandleConsumerMessage;
-
             return Task.CompletedTask;
         }
 
         public void Start ( PushRuntimeSettings limitations ) {
             logger.Info ( $"Starting MessagePump for {this.messagePumpName}" );
+
+            this.queue = session.GetQueue ( this.nsbSettings.InputQueue );
+            this.consumer = session.CreateConsumer ( queue );
+            this.consumer.Listener += HandleConsumerMessage;
         }
 
         public Task Stop () {
             logger.Info ( $"Stopping MessagePump for {this.messagePumpName}" );
+
+            this.consumer.Listener -= HandleConsumerMessage;
+            this.consumer.Close ();
+            this.queue.Dispose ();
+
             return Task.CompletedTask;
         }
 
