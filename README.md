@@ -1,9 +1,8 @@
-# nsb-amqp-transport
-NServiceBus AMQP Transport
+# Apache NMS AMQP Transport for NServiceBus
 
 The "NServiceBus AMQP Transport" name is self-explanatory, it’s a library that provides a transport option for NServiceBus to connect to ActiveMq (specifically Artemis). 
 
-The transport utilises the Apache.NMS.AMQP library as the core API to a broker.
+The transport utilises the Apache.NMS.AMQP library as the messaging API to a broker.
 
 The following diagram depicts where this library sits within your application structure:
 
