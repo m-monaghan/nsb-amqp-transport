@@ -6,7 +6,7 @@ The transport utilises the Apache.NMS.AMQP library as the messaging API to a bro
 
 The following diagram depicts where this library sits within your application structure:
 
-![alt text](https://github.com/m-monaghan/nsb-amqp-transport/tree/master/assets/WhatIsThis.png "What is this")
+![Library Structure](https://github.com/m-monaghan/nsb-amqp-transport/blob/master/assets/WhatIsThis.png "What is this")
 
 ## Samples
 
