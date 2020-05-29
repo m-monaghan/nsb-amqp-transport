@@ -1,30 +1,16 @@
-# nsb-amqp-transport
-NServiceBus AMQP Transport
+# Apache NMS AMQP Transport for NServiceBus
 
-The "NServiceBus AMQP Transport" name is self-explanatory, it’s a library that provides a transport option for NServiceBus to connect to ActiveMq/AMQ. 
+The "NServiceBus AMQP Transport" name is self-explanatory, it’s a library that provides a transport option for NServiceBus to connect to ActiveMq (specifically Artemis). 
 
-It’s currently under development and isn’t suitable for production use.
+The transport utilises the Apache.NMS.AMQP library as the messaging API to a broker.
 
-The core library will be based on AmqpNetLite (https://github.com/Azure/amqpnetlite).
+The following diagram depicts where this library sits within your application structure:
 
-Testing again
-
-## Roadmap 
-
-- [ ] Ability to connect to an ActiveMq broker
-- [ ] Ability to send a message to a queue
-- [ ] Ability to send a message to a topic
-- [ ] Ability to receive a message from a queue
-- [ ] Ability to receive a message from a topic
-- [ ] Ability to dynamically create queues
-- [ ] Ability to control message transactions
-- [ ] Route failed messages to a pre-defined queue
-- [ ] Support/prove the mailbox pattern
-- [ ] Ability to replay dead letter messages
+![alt text](https://github.com/m-monaghan/nsb-amqp-transport/tree/master/assets/WhatIsThis.png "What is this")
 
 ## Samples
 
-The samples have been created and tested against a local docker ActiveMq instance obtained from https://hub.docker.com/r/vromero/activemq-artemis
+The samples have been created and tested against a local docker ActiveMq Artemis instance obtained from https://hub.docker.com/r/vromero/activemq-artemis
 
 ### Notes
 
@@ -37,5 +23,7 @@ docker pull vromero/activemq-artemis
 ## References
 
 - NServiceBus: https://github.com/Particular/NServiceBus
+- Apache.NMS.AMQP: https://activemq.apache.org/components/nms
 - AmqpNetLite: https://github.com/Azure/amqpnetlite
+- ActiveMq NMS AMQP:  https://github.com/apache/activemq-nms-amqp
 - AMQP: http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-overview-v1.0-os.html
