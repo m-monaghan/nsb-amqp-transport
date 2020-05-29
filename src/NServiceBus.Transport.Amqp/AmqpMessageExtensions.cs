@@ -1,4 +1,5 @@
 ﻿namespace NServiceBus.Transport.Amqp {
+    using System;
     using System.Collections.Generic;
     using Apache.NMS;
     using NServiceBus.Extensibility;
@@ -21,6 +22,14 @@
                 string.Empty );
             if (!string.IsNullOrEmpty ( replyToQueueName ))
                 amqpMessage.NMSReplyTo = session.GetQueue ( replyToQueueName );
+
+            if (outgoingMessage.Headers.ContainsKey( Headers.NonDurableMessage ))
+                amqpMessage.NMSDeliveryMode = MsgDeliveryMode.NonPersistent;
+
+            amqpMessage.NMSTimestamp = GetNsbHeaderValue (
+                Headers.TimeSent,
+                outgoingMessage.Headers,
+                amqpMessage.NMSTimestamp );
         }
 
         public static void PopulateApplicationPropertiesFromNsbHeaders (
@@ -77,6 +86,22 @@
                 return headerValue;
 
             return currentHeaderValue;
+        }
+
+        private static DateTime GetNsbHeaderValue (
+            string nsbHeaderPropertyName,
+            Dictionary<string, string> headers,
+            DateTime currentHeaderValue ) {
+            string headerValue;
+
+            if (!headers.TryGetValue ( nsbHeaderPropertyName, out headerValue ))
+                return currentHeaderValue;
+
+            try {
+                return DateTimeExtensions.ToUtcDateTime ( headerValue );
+            } catch (Exception) {
+                return currentHeaderValue;
+            }
         }
     }
 }
