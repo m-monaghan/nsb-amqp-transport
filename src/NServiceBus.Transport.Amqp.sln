@@ -76,4 +76,28 @@ Global
 		{31B53EC8-DE26-433F-8F1C-2E6DBB2D5E78} = {CA425AEA-E6F3-4B4E-9AF2-1C56E90A6267}
 		{DE08813E-5278-4B6A-A21F-07075E18FE84} = {474EEB72-8CD9-4F88-975B-46F6E9CB9C7B}
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.FileWidth = 160
+		$1.TabsToSpaces = True
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.IndentSwitchCaseSection = False
+		$2.NewLinesForBracesInTypes = False
+		$2.NewLinesForBracesInMethods = False
+		$2.NewLinesForBracesInProperties = False
+		$2.NewLinesForBracesInAccessors = False
+		$2.NewLinesForBracesInAnonymousMethods = False
+		$2.NewLinesForBracesInControlBlocks = False
+		$2.NewLinesForBracesInAnonymousTypes = False
+		$2.NewLinesForBracesInObjectCollectionArrayInitializers = False
+		$2.NewLinesForBracesInLambdaExpressionBody = False
+		$2.SpacingAfterMethodDeclarationName = True
+		$2.SpaceWithinMethodDeclarationParenthesis = True
+		$2.SpaceAfterMethodCallName = True
+		$2.SpaceWithinMethodCallParentheses = True
+		$2.SpaceWithinExpressionParentheses = True
+		$2.scope = text/x-csharp
+	EndGlobalSection
 EndGlobal

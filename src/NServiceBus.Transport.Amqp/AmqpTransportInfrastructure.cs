@@ -14,6 +14,7 @@
     using NServiceBus.Transport;
     using NServiceBus.Transport.Amqp.Receiving;
     using NServiceBus.Transport.Amqp.Sending;
+    using SettingsKeys = Configuration.SettingsKeys;
 
     sealed class AmqpTransportInfrastructure : TransportInfrastructure {
         static readonly ILog logger = LogManager.GetLogger<AmqpTransportInfrastructure> ();
@@ -28,7 +29,7 @@
             this.settings = settings;
 
             this.connection = this.CreateConnection ();
-            this.session = connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
+            this.session = this.CreateSession ();
         }
 
         public override IEnumerable<Type> DeliveryConstraints => new List<Type> { typeof ( DiscardIfNotReceivedBefore ), typeof ( NonDurableDelivery ), typeof ( DoNotDeliverBefore ), typeof ( DelayDeliveryWith ) };
@@ -91,13 +92,17 @@
         }
 
         private IConnection CreateConnection() {
-            if ( this.settings.HasSetting ( "username" ) && this.settings.HasSetting ( "password" ) ) {
+            if ( this.settings.HasSetting ( SettingsKeys.Username ) && this.settings.HasSetting ( SettingsKeys.Password ) ) {
                 return this.factory.CreateConnection (
-                    this.settings.Get<string> ( "username" ),
-                    this.settings.Get<string> ( "password" ) );
+                    this.settings.Get<string> ( SettingsKeys.Username ),
+                    this.settings.Get<string> ( SettingsKeys.Password ) );
             }
 
             return this.factory.CreateConnection ();
+        }
+
+        private ISession CreateSession() {
+            return connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
         }
     }
 }
