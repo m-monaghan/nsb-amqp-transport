@@ -11,7 +11,8 @@
 
             var endpointConfiguration = new EndpointConfiguration ( "NsbSample.Server" );
             var transport = endpointConfiguration.UseTransport<AmqpTransport> ();
-            transport.ConnectionString ( "amqp://guest:guest@localhost:5672" );
+            transport.ConnectionString ( "amqp://localhost:5672" );
+            transport.SetUsernameAndPassword ( "guest", "guest" );
 
             endpointConfiguration.UsePersistence<InMemoryPersistence> ();
             endpointConfiguration.DisableFeature<TimeoutManager> ();

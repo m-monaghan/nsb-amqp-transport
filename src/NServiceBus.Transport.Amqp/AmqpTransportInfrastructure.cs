@@ -25,9 +25,10 @@
 
         public AmqpTransportInfrastructure ( SettingsHolder settings, string connectionString ) {
             this.factory = new NmsConnectionFactory ( connectionString );
-            this.connection = this.factory.CreateConnection ( "guest", "guest" );
-            this.session = connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
             this.settings = settings;
+
+            this.connection = this.CreateConnection ();
+            this.session = connection.CreateSession ( AcknowledgementMode.AutoAcknowledge );
         }
 
         public override IEnumerable<Type> DeliveryConstraints => new List<Type> { typeof ( DiscardIfNotReceivedBefore ), typeof ( NonDurableDelivery ), typeof ( DoNotDeliverBefore ), typeof ( DelayDeliveryWith ) };
@@ -77,7 +78,7 @@
         }
 
         public override Task Start () {
-            logger.Info ("Starting AMQP transport");
+            logger.Info ( "Starting AMQP transport" );
             this.connection.Start ();
             return base.Start ();
         }
@@ -87,6 +88,16 @@
             this.session.Close ();
             this.connection.Close ();
             await base.Stop ();
+        }
+
+        private IConnection CreateConnection() {
+            if ( this.settings.HasSetting ( "username" ) && this.settings.HasSetting ( "password" ) ) {
+                return this.factory.CreateConnection (
+                    this.settings.Get<string> ( "username" ),
+                    this.settings.Get<string> ( "password" ) );
+            }
+
+            return this.factory.CreateConnection ();
         }
     }
 }

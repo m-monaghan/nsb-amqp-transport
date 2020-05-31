@@ -8,6 +8,9 @@
             return new AmqpTransportInfrastructure ( settings, connectionString );
         }
 
-        public override string ExampleConnectionStringForErrorMessage { get; } = "amqp://guest:guest@localhost:5672";
+        public override string ExampleConnectionStringForErrorMessage { get; } = "amqp://localhost:5672";
+
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }
