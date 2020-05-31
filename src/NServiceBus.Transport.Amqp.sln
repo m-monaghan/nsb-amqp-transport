@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NsbAmqpSample.Server", "Sam
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{474EEB72-8CD9-4F88-975B-46F6E9CB9C7B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Transport.AmqpTests", "NServiceBus.Transport.AmqpTests\NServiceBus.Transport.AmqpTests.csproj", "{DEF14922-4FDA-44F8-88A2-EDD736A96726}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{31B53EC8-DE26-433F-8F1C-2E6DBB2D5E78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31B53EC8-DE26-433F-8F1C-2E6DBB2D5E78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31B53EC8-DE26-433F-8F1C-2E6DBB2D5E78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEF14922-4FDA-44F8-88A2-EDD736A96726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEF14922-4FDA-44F8-88A2-EDD736A96726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEF14922-4FDA-44F8-88A2-EDD736A96726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEF14922-4FDA-44F8-88A2-EDD736A96726}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1A446B10-7EB1-421A-853F-3E48B5AD0216} = {95CE0378-CC58-45D4-A101-D357C0691398}
@@ -75,6 +81,7 @@ Global
 		{C26375CF-9D44-4261-B4BC-BDC83B852C2D} = {CA425AEA-E6F3-4B4E-9AF2-1C56E90A6267}
 		{31B53EC8-DE26-433F-8F1C-2E6DBB2D5E78} = {CA425AEA-E6F3-4B4E-9AF2-1C56E90A6267}
 		{DE08813E-5278-4B6A-A21F-07075E18FE84} = {474EEB72-8CD9-4F88-975B-46F6E9CB9C7B}
+		{DEF14922-4FDA-44F8-88A2-EDD736A96726} = {474EEB72-8CD9-4F88-975B-46F6E9CB9C7B}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
